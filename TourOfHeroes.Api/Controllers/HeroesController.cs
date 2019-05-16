@@ -9,23 +9,35 @@ namespace TourOfHeroes.Api.Controllers
    [ApiController]
    public class HeroesController : Controller
    {
-      private readonly IMediator _mediator;
+      private readonly IMediator mediator;
 
       public HeroesController(IMediator mediator)
       {
-         _mediator = mediator;
+         this.mediator = mediator;
       }
 
       [HttpGet]
       public async Task<IActionResult> GetHeroes()
       {
-         return Ok(await _mediator.Send(new HeroQueries.HeroesQuery()));
+         return Ok(await mediator.Send(new HeroQueries.HeroesQuery()));
       }
 
       [HttpGet("{id}")]
       public async Task<IActionResult> Get(int id)
       {
-         var result = await _mediator.Send(new HeroQueries.HeroQuery() { Id = id });
+         var result = await mediator.Send(new HeroQueries.HeroQuery() { Id = id });
+         if (result == null)
+         {
+            return NotFound();
+         }
+         return Ok(result);
+      }
+
+      [HttpGet()]
+      [Route(nameof(HeroesController.Search))]
+      public async Task<IActionResult> Search(string name)
+      {
+         var result = await mediator.Send(new HeroQueries.HeroesByNameQuery() { Name = name });
          if (result == null)
          {
             return NotFound();
@@ -36,25 +48,21 @@ namespace TourOfHeroes.Api.Controllers
       [HttpPost]
       public async Task<IActionResult> PostHero(Hero hero)
       {
-         await _mediator.Send(new HeroCommands.HeroCreateCommand { Hero = hero });
+         await mediator.Send(new HeroCommands.HeroCreateCommand { Hero = hero });
          return CreatedAtAction(nameof(Get), new { id = hero.Id }, hero);
       }
 
       [HttpPut]
-      public async Task<IActionResult> PutHero(int id, Hero hero)
+      public async Task<IActionResult> PutHero(Hero hero)
       {
-         if (id != hero.Id)
-         {
-            return BadRequest();
-         }
-         await _mediator.Send(new HeroCommands.HeroUpdateCommand { Hero = hero });
+         await mediator.Send(new HeroCommands.HeroUpdateCommand { Hero = hero });
          return NoContent();
       }
 
       [HttpDelete("{id}")]
       public async Task<IActionResult> DeleteHero(int id)
       {
-         await _mediator.Send(new HeroCommands.HeroDeleteCommand { Id = id });
+         await mediator.Send(new HeroCommands.HeroDeleteCommand { Id = id });
          return NoContent();
       }
    }

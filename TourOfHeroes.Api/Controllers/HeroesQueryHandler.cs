@@ -11,18 +11,18 @@ namespace TourOfHeroes.Api.Controllers
 {
    public class HeroesQueryHandler : IRequestHandler<HeroQueries.HeroesQuery, IEnumerable<Hero>>
    {
-      private readonly HeroContext _heroContext;
+      private readonly HeroContext heroContext;
 
       public HeroesQueryHandler(HeroContext heroContext)
       {
-         this._heroContext = heroContext;
+         this.heroContext = heroContext;
       }
 
       public async Task<IEnumerable<Hero>> Handle(HeroQueries.HeroesQuery request, CancellationToken cancellationToken)
       {
-         if (_heroContext.Heroes.Count() == 0)
+         if (heroContext.Heroes.Count() == 0)
          {
-            _heroContext.Heroes.AddRange(new Collection<Hero>()
+            heroContext.Heroes.AddRange(new Collection<Hero>()
             {
                new Hero{ Id = 11, Name = "Capitan America", Active =  true },
                new Hero{ Id = 12, Name = "Ironman", Active =  true },
@@ -36,9 +36,9 @@ namespace TourOfHeroes.Api.Controllers
                new Hero{ Id = 20, Name = "Valkiria", Active =  false },
                new Hero{ Id = 21, Name = "Thanos", Active = false },
             });
-            _heroContext.SaveChanges();
+            heroContext.SaveChanges();
          }
-         return await _heroContext.Heroes.ToArrayAsync();
+         return await heroContext.Heroes.ToArrayAsync();
       }
    }
 }

@@ -8,12 +8,16 @@ namespace TourOfHeroes.Api.Controllers
    {
       public class HeroesQuery : IRequest<IEnumerable<Hero>>
       {
-
       }
 
       public class HeroQuery : IRequest<Hero>
       {
          public int Id { get; set; }
+      }
+
+      public class HeroesByNameQuery : IRequest<IEnumerable<Hero>>
+      {
+         public string Name { get; set; }
       }
    }
 }
